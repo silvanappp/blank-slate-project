@@ -58,7 +58,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   }, []);
 
-  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
+  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || "https://silvanaportela1.app.n8n.cloud/webhook/sales-calls";
 
   const submitAudio = async () => {
     if (!file || !audioMember) {
