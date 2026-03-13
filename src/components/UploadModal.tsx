@@ -13,7 +13,8 @@ import { useCreateCall } from "@/hooks/useCalls";
 import { toast } from "@/hooks/use-toast";
 
 const AUDIO_FORMATS = ".mp3,.wav,.m4a,.mp4,.mov,.avi";
-const MAX_SIZE = 500 * 1024 * 1024;
+const TEXT_FILE_FORMATS = ".docx,.pdf,.txt";
+const MAX_AUDIO_SIZE = 999 * 1024 * 1024;
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void };
 
@@ -35,15 +36,18 @@ export function UploadModal({ open, onOpenChange }: Props) {
   const [transcript, setTranscript] = useState("");
   const [duration, setDuration] = useState("");
   const [textSubmitting, setTextSubmitting] = useState(false);
+  const [textFile, setTextFile] = useState<File | null>(null);
+  const textFileRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
     setFile(null); setAudioMember(""); setProgress(0); setUploading(false);
     setTextMember(""); setCallName(""); setTranscript(""); setDuration(""); setTextSubmitting(false);
+    setTextFile(null);
   };
 
   const handleFile = (f: File) => {
-    if (f.size > MAX_SIZE) {
-      toast({ title: "File too large", description: "Maximum file size is 500MB", variant: "destructive" });
+    if (f.size > MAX_AUDIO_SIZE) {
+      toast({ title: "File too large", description: "Maximum file size is 999MB", variant: "destructive" });
       return;
     }
     setFile(f);
@@ -111,8 +115,8 @@ export function UploadModal({ open, onOpenChange }: Props) {
   };
 
   const submitText = async () => {
-    if (!textMember || !callName || transcript.length < 100) {
-      toast({ title: "Please fill all fields. Transcript must be at least 100 characters.", variant: "destructive" });
+    if (!textMember || !callName || (!transcript && !textFile)) {
+      toast({ title: "Please fill all fields and provide a transcript or file.", variant: "destructive" });
       return;
     }
     if (!webhookUrl) {
@@ -124,18 +128,21 @@ export function UploadModal({ open, onOpenChange }: Props) {
     try {
       const call = await createCall.mutateAsync({
         team_member: textMember,
-        file_name: callName,
+        file_name: textFile ? textFile.name : callName,
         input_type: "text",
-        transcription: transcript,
+        transcription: transcript || undefined,
         duration: duration || undefined,
       });
 
       const formData = new FormData();
       formData.append("callId", call.id);
       formData.append("teamMember", textMember);
-      formData.append("fileName", callName);
+      formData.append("fileName", textFile ? textFile.name : callName);
       formData.append("inputType", "text");
-      formData.append("transcription", transcript);
+      if (textFile) {
+        formData.append("file", textFile);
+      }
+      if (transcript) formData.append("transcription", transcript);
       if (duration) formData.append("duration", duration);
 
       const resp = await fetch(webhookUrl, { method: "POST", body: formData });
@@ -193,7 +200,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
                 <>
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
                   <p className="text-sm text-muted-foreground">Drag & drop or click to upload</p>
-                  <p className="text-xs text-muted-foreground mt-1">MP3, WAV, M4A, MP4, MOV, AVI — max 500MB</p>
+                  <p className="text-xs text-muted-foreground mt-1">MP3, WAV, M4A, MP4, MOV, AVI — max 999MB</p>
                 </>
               )}
             </div>
@@ -219,16 +226,34 @@ export function UploadModal({ open, onOpenChange }: Props) {
               <Label>Call Name</Label>
               <Input value={callName} onChange={(e) => setCallName(e.target.value)} placeholder="e.g., Discovery call with Acme Corp" />
             </div>
+
             <div>
-              <Label>Transcript <span className="text-muted-foreground text-xs">(min 100 characters)</span></Label>
+              <Label>Upload Document <span className="text-muted-foreground text-xs">(optional — DOCX, PDF, TXT)</span></Label>
+              <div className="flex items-center gap-2 mt-1">
+                <input ref={textFileRef} type="file" accept={TEXT_FILE_FORMATS} className="hidden" onChange={(e) => e.target.files?.[0] && setTextFile(e.target.files[0])} />
+                <Button variant="outline" size="sm" onClick={() => textFileRef.current?.click()} type="button">
+                  <Upload className="h-4 w-4 mr-2" /> Choose File
+                </Button>
+                {textFile && (
+                  <div className="flex items-center gap-1 text-sm">
+                    <span className="truncate max-w-[200px]">{textFile.name}</span>
+                    <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => setTextFile(null)}>
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <Label>Transcript <span className="text-muted-foreground text-xs">(or paste text directly)</span></Label>
               <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Paste the full call transcript here..." rows={6} />
-              <p className="text-xs text-muted-foreground mt-1">{transcript.length} / 100 min characters</p>
             </div>
             <div>
               <Label>Duration <span className="text-muted-foreground text-xs">(optional, MM:SS)</span></Label>
               <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="e.g., 15:30" />
             </div>
-            <Button onClick={submitText} disabled={textSubmitting || !textMember || !callName || transcript.length < 100} className="w-full">
+            <Button onClick={submitText} disabled={textSubmitting || !textMember || !callName || (!transcript && !textFile)} className="w-full">
               {textSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit & Analyze"}
             </Button>
           </TabsContent>
