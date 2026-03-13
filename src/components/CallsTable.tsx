@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
-import { Eye, Play, Download, Trash2, ArrowUpDown, Mic, FileText } from "lucide-react";
+import { Eye, Play, Download, Trash2, ArrowUpDown, Mic, FileText, Type } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,11 @@ function ScoreBadge({ score }: { score: number | null }) {
 
 function StatusBadge({ status }: { status: string | null }) {
   if (!status) return null;
+  const labels: Record<string, string> = {
+    processing: "Processando",
+    completed: "Concluído",
+    failed: "Falhou",
+  };
   const variants: Record<string, string> = {
     processing: "bg-primary/15 text-primary animate-pulse-slow",
     completed: "bg-score-good score-good",
@@ -28,17 +33,36 @@ function StatusBadge({ status }: { status: string | null }) {
   };
   return (
     <Badge variant="outline" className={`border-0 ${variants[status] || ""}`}>
-      {status}
+      {labels[status] || status}
     </Badge>
   );
 }
 
-function TypeBadge({ type }: { type: string | null }) {
-  const isAudio = type === "audio";
+const DOC_EXTENSIONS = [".pdf", ".docx", ".doc", ".txt"];
+
+function hasDocExtension(fileName: string): boolean {
+  const lower = fileName.toLowerCase();
+  return DOC_EXTENSIONS.some((ext) => lower.endsWith(ext));
+}
+
+function TypeBadge({ type, fileName }: { type: string | null; fileName: string }) {
+  if (type === "audio") {
+    return (
+      <Badge variant="outline" className="gap-1">
+        <Mic className="h-3 w-3" /> Áudio
+      </Badge>
+    );
+  }
+  if (type === "text" && hasDocExtension(fileName)) {
+    return (
+      <Badge variant="outline" className="gap-1">
+        <FileText className="h-3 w-3" /> Documento
+      </Badge>
+    );
+  }
   return (
     <Badge variant="outline" className="gap-1">
-      {isAudio ? <Mic className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
-      {isAudio ? "Audio" : "Text"}
+      <Type className="h-3 w-3" /> Texto
     </Badge>
   );
 }
@@ -87,8 +111,8 @@ export function CallsTable({ calls, isLoading }: Props) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
         <Mic className="h-12 w-12 mb-4 opacity-40" />
-        <p className="text-lg font-medium">No calls yet</p>
-        <p className="text-sm">Upload your first call to get started</p>
+        <p className="text-lg font-medium">Nenhuma chamada ainda</p>
+        <p className="text-sm">Envie sua primeira chamada para começar</p>
       </div>
     );
   }
@@ -106,26 +130,26 @@ export function CallsTable({ calls, isLoading }: Props) {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/30 hover:bg-muted/30">
-              <TableHead><SortHeader label="Date" sKey="created_at" /></TableHead>
-              <TableHead><SortHeader label="Team Member" sKey="team_member" /></TableHead>
-              <TableHead>File</TableHead>
-              <TableHead><SortHeader label="Score" sKey="score" /></TableHead>
+              <TableHead><SortHeader label="Data" sKey="created_at" /></TableHead>
+              <TableHead><SortHeader label="Membro" sKey="team_member" /></TableHead>
+              <TableHead>Arquivo</TableHead>
+              <TableHead><SortHeader label="Nota" sKey="score" /></TableHead>
               <TableHead><SortHeader label="Status" sKey="status" /></TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {paginated.map((call) => (
               <TableRow key={call.id} className="hover:bg-accent/50 cursor-pointer" onClick={() => navigate(`/call/${call.id}`)}>
                 <TableCell className="text-sm">
-                  {call.created_at ? format(new Date(call.created_at), "MMM d, yyyy HH:mm") : "—"}
+                  {call.created_at ? format(new Date(call.created_at), "dd/MM/yyyy HH:mm") : "—"}
                 </TableCell>
                 <TableCell className="font-medium">{call.team_member}</TableCell>
                 <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{call.file_name}</TableCell>
                 <TableCell><ScoreBadge score={call.score} /></TableCell>
                 <TableCell><StatusBadge status={call.status} /></TableCell>
-                <TableCell><TypeBadge type={call.input_type} /></TableCell>
+                <TableCell><TypeBadge type={call.input_type} fileName={call.file_name} /></TableCell>
                 <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-end gap-1">
                     <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/call/${call.id}`)}>
@@ -153,13 +177,13 @@ export function CallsTable({ calls, isLoading }: Props) {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Delete call?</AlertDialogTitle>
-                          <AlertDialogDescription>This action cannot be undone. This will permanently delete the call record.</AlertDialogDescription>
+                          <AlertDialogTitle>Excluir chamada?</AlertDialogTitle>
+                          <AlertDialogDescription>Esta ação não pode ser desfeita. O registro da chamada será excluído permanentemente.</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction onClick={() => deleteCall.mutate(call.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Delete
+                            Excluir
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -174,11 +198,11 @@ export function CallsTable({ calls, isLoading }: Props) {
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-muted-foreground">
-            Showing {page * perPage + 1}–{Math.min((page + 1) * perPage, sorted.length)} of {sorted.length}
+            Mostrando {page * perPage + 1}–{Math.min((page + 1) * perPage, sorted.length)} de {sorted.length}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Anterior</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Próximo</Button>
           </div>
         </div>
       )}

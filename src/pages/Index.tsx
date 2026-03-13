@@ -43,11 +43,11 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground text-sm mt-1">Monitor and evaluate your team's sales calls</p>
+          <h1 className="text-2xl font-bold">Painel</h1>
+          <p className="text-muted-foreground text-sm mt-1">Monitore e avalie as chamadas de vendas da sua equipe</p>
         </div>
         <Button onClick={() => setUploadOpen(true)} className="gap-2">
-          <Upload className="h-4 w-4" /> Upload Call
+          <Upload className="h-4 w-4" /> Enviar Chamada
         </Button>
       </div>
 

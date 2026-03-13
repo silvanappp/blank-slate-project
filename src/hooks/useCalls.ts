@@ -56,10 +56,10 @@ export function useDeleteCall() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["calls"] });
-      toast({ title: "Call deleted successfully" });
+      toast({ title: "Chamada excluída com sucesso" });
     },
     onError: () => {
-      toast({ title: "Failed to delete call", variant: "destructive" });
+      toast({ title: "Falha ao excluir chamada", variant: "destructive" });
     },
   });
 }
@@ -87,7 +87,7 @@ export function useCreateCall() {
       queryClient.invalidateQueries({ queryKey: ["calls"] });
     },
     onError: () => {
-      toast({ title: "Failed to create call record", variant: "destructive" });
+      toast({ title: "Falha ao criar registro da chamada", variant: "destructive" });
     },
   });
 }

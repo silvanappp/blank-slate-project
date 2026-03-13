@@ -55,16 +55,16 @@ export function MetricCards({ calls, isLoading }: { calls: Call[]; isLoading: bo
   }).length;
 
   const metrics = [
-    { label: "Total Calls", value: totalCalls, icon: Phone, color: "text-primary" },
+    { label: "Total de Chamadas", value: totalCalls, icon: Phone, color: "text-primary" },
     {
-      label: "Avg Score",
+      label: "Nota Média",
       value: scored.length ? avgScore : "—",
       icon: TrendingUp,
       color: scored.length ? getScoreColor(avgScore) : "text-muted-foreground",
       bg: scored.length ? getScoreBg(avgScore) : "",
     },
-    { label: "This Month", value: monthCalls, icon: Calendar, color: "text-primary" },
-    { label: "Avg Duration", value: avgDuration(calls), icon: Clock, color: "text-primary" },
+    { label: "Este Mês", value: monthCalls, icon: Calendar, color: "text-primary" },
+    { label: "Duração Média", value: avgDuration(calls), icon: Clock, color: "text-primary" },
   ];
 
   return (
