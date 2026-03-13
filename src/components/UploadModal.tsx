@@ -22,7 +22,6 @@ export function UploadModal({ open, onOpenChange }: Props) {
   const { data: members } = useTeamMembers();
   const createCall = useCreateCall();
 
-  // Audio state
   const [file, setFile] = useState<File | null>(null);
   const [audioMember, setAudioMember] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -30,7 +29,6 @@ export function UploadModal({ open, onOpenChange }: Props) {
   const [dragOver, setDragOver] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Text state
   const [textMember, setTextMember] = useState("");
   const [callName, setCallName] = useState("");
   const [transcript, setTranscript] = useState("");
@@ -47,7 +45,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
 
   const handleFile = (f: File) => {
     if (f.size > MAX_AUDIO_SIZE) {
-      toast({ title: "File too large", description: "Maximum file size is 999MB", variant: "destructive" });
+      toast({ title: "Arquivo muito grande", description: "Tamanho máximo é 999MB", variant: "destructive" });
       return;
     }
     setFile(f);
@@ -62,11 +60,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
 
   const submitAudio = async () => {
     if (!file || !audioMember) {
-      toast({ title: "Please select a file and team member", variant: "destructive" });
-      return;
-    }
-    if (!webhookUrl) {
-      toast({ title: "N8N webhook URL not configured", variant: "destructive" });
+      toast({ title: "Selecione um arquivo e um membro da equipe", variant: "destructive" });
       return;
     }
 
@@ -96,18 +90,18 @@ export function UploadModal({ open, onOpenChange }: Props) {
       await new Promise<void>((resolve, reject) => {
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) resolve();
-          else reject(new Error(`Upload failed: ${xhr.status}`));
+          else reject(new Error(`Falha no upload: ${xhr.status}`));
         };
-        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.onerror = () => reject(new Error("Erro de rede"));
         xhr.send(formData);
       });
 
       setProgress(100);
-      toast({ title: "Call uploaded successfully", description: "AI evaluation will begin shortly" });
+      toast({ title: "Chamada enviada com sucesso", description: "A avaliação por IA começará em breve" });
       reset();
       onOpenChange(false);
     } catch (err) {
-      toast({ title: "Upload failed", description: String(err), variant: "destructive" });
+      toast({ title: "Falha no envio", description: String(err), variant: "destructive" });
       setProgress(0);
     } finally {
       setUploading(false);
@@ -116,11 +110,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
 
   const submitText = async () => {
     if (!textMember || !callName || (!transcript && !textFile)) {
-      toast({ title: "Please fill all fields and provide a transcript or file.", variant: "destructive" });
-      return;
-    }
-    if (!webhookUrl) {
-      toast({ title: "N8N webhook URL not configured", variant: "destructive" });
+      toast({ title: "Preencha todos os campos e forneça uma transcrição ou arquivo.", variant: "destructive" });
       return;
     }
 
@@ -139,20 +129,18 @@ export function UploadModal({ open, onOpenChange }: Props) {
       formData.append("teamMember", textMember);
       formData.append("fileName", textFile ? textFile.name : callName);
       formData.append("inputType", "text");
-      if (textFile) {
-        formData.append("file", textFile);
-      }
+      if (textFile) formData.append("file", textFile);
       if (transcript) formData.append("transcription", transcript);
       if (duration) formData.append("duration", duration);
 
       const resp = await fetch(webhookUrl, { method: "POST", body: formData });
-      if (!resp.ok) throw new Error(`Webhook failed: ${resp.status}`);
+      if (!resp.ok) throw new Error(`Webhook falhou: ${resp.status}`);
 
-      toast({ title: "Transcript submitted", description: "AI evaluation will begin shortly" });
+      toast({ title: "Transcrição enviada", description: "A avaliação por IA começará em breve" });
       reset();
       onOpenChange(false);
     } catch (err) {
-      toast({ title: "Submission failed", description: String(err), variant: "destructive" });
+      toast({ title: "Falha no envio", description: String(err), variant: "destructive" });
     } finally {
       setTextSubmitting(false);
     }
@@ -162,19 +150,19 @@ export function UploadModal({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Upload Call</DialogTitle>
+          <DialogTitle>Enviar Chamada</DialogTitle>
         </DialogHeader>
         <Tabs defaultValue="audio" className="mt-2">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="audio" className="gap-2"><Upload className="h-4 w-4" /> Audio/Video</TabsTrigger>
-            <TabsTrigger value="text" className="gap-2"><FileText className="h-4 w-4" /> Text Transcript</TabsTrigger>
+            <TabsTrigger value="audio" className="gap-2"><Upload className="h-4 w-4" /> Áudio/Vídeo</TabsTrigger>
+            <TabsTrigger value="text" className="gap-2"><FileText className="h-4 w-4" /> Transcrição</TabsTrigger>
           </TabsList>
 
           <TabsContent value="audio" className="space-y-4 mt-4">
             <div>
-              <Label>Team Member</Label>
+              <Label>Membro da Equipe</Label>
               <Select value={audioMember} onValueChange={setAudioMember}>
-                <SelectTrigger><SelectValue placeholder="Select team member" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecione o membro" /></SelectTrigger>
                 <SelectContent>
                   {members?.map((m) => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}
                 </SelectContent>
@@ -199,8 +187,8 @@ export function UploadModal({ open, onOpenChange }: Props) {
               ) : (
                 <>
                   <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Drag & drop or click to upload</p>
-                  <p className="text-xs text-muted-foreground mt-1">MP3, WAV, M4A, MP4, MOV, AVI — max 999MB</p>
+                  <p className="text-sm text-muted-foreground">Arraste e solte ou clique para enviar</p>
+                  <p className="text-xs text-muted-foreground mt-1">MP3, WAV, M4A, MP4, MOV, AVI — máx 999MB</p>
                 </>
               )}
             </div>
@@ -208,31 +196,31 @@ export function UploadModal({ open, onOpenChange }: Props) {
             {uploading && <Progress value={progress} className="h-2" />}
 
             <Button onClick={submitAudio} disabled={uploading || !file || !audioMember} className="w-full">
-              {uploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...</> : "Upload & Analyze"}
+              {uploading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</> : "Enviar e Analisar"}
             </Button>
           </TabsContent>
 
           <TabsContent value="text" className="space-y-4 mt-4">
             <div>
-              <Label>Team Member</Label>
+              <Label>Membro da Equipe</Label>
               <Select value={textMember} onValueChange={setTextMember}>
-                <SelectTrigger><SelectValue placeholder="Select team member" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecione o membro" /></SelectTrigger>
                 <SelectContent>
                   {members?.map((m) => <SelectItem key={m.id} value={m.name}>{m.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Call Name</Label>
-              <Input value={callName} onChange={(e) => setCallName(e.target.value)} placeholder="e.g., Discovery call with Acme Corp" />
+              <Label>Nome da Chamada</Label>
+              <Input value={callName} onChange={(e) => setCallName(e.target.value)} placeholder="Ex: Descoberta com Empresa X" />
             </div>
 
             <div>
-              <Label>Upload Document <span className="text-muted-foreground text-xs">(optional — DOCX, PDF, TXT)</span></Label>
+              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — DOCX, PDF, TXT)</span></Label>
               <div className="flex items-center gap-2 mt-1">
                 <input ref={textFileRef} type="file" accept={TEXT_FILE_FORMATS} className="hidden" onChange={(e) => e.target.files?.[0] && setTextFile(e.target.files[0])} />
                 <Button variant="outline" size="sm" onClick={() => textFileRef.current?.click()} type="button">
-                  <Upload className="h-4 w-4 mr-2" /> Choose File
+                  <Upload className="h-4 w-4 mr-2" /> Escolher Arquivo
                 </Button>
                 {textFile && (
                   <div className="flex items-center gap-1 text-sm">
@@ -246,15 +234,15 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Transcript <span className="text-muted-foreground text-xs">(or paste text directly)</span></Label>
-              <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Paste the full call transcript here..." rows={6} />
+              <Label>Transcrição <span className="text-muted-foreground text-xs">(ou cole o texto diretamente)</span></Label>
+              <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Cole a transcrição completa da chamada aqui..." rows={6} />
             </div>
             <div>
-              <Label>Duration <span className="text-muted-foreground text-xs">(optional, MM:SS)</span></Label>
-              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="e.g., 15:30" />
+              <Label>Duração <span className="text-muted-foreground text-xs">(opcional, MM:SS)</span></Label>
+              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Ex: 15:30" />
             </div>
             <Button onClick={submitText} disabled={textSubmitting || !textMember || !callName || (!transcript && !textFile)} className="w-full">
-              {textSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Submitting...</> : "Submit & Analyze"}
+              {textSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...</> : "Enviar e Analisar"}
             </Button>
           </TabsContent>
         </Tabs>
