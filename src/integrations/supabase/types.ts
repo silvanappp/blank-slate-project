@@ -14,7 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      calls: {
+        Row: {
+          created_at: string | null
+          duration: string | null
+          feedback: string | null
+          file_name: string
+          file_url: string | null
+          id: string
+          input_type: string | null
+          score: number | null
+          status: string | null
+          suggestions: string | null
+          team_member: string
+          transcription: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: string | null
+          feedback?: string | null
+          file_name: string
+          file_url?: string | null
+          id?: string
+          input_type?: string | null
+          score?: number | null
+          status?: string | null
+          suggestions?: string | null
+          team_member: string
+          transcription?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          duration?: string | null
+          feedback?: string | null
+          file_name?: string
+          file_url?: string | null
+          id?: string
+          input_type?: string | null
+          score?: number | null
+          status?: string | null
+          suggestions?: string | null
+          team_member?: string
+          transcription?: string | null
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
