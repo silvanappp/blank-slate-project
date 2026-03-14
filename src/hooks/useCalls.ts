@@ -77,13 +77,21 @@ export function useCreateCall() {
     }) => {
       const { data, error } = await supabase
         .from("calls")
-        .insert({ ...call, status: call.status || "processing" })
+        .insert({
+          team_member: call.team_member,
+          file_name: call.file_name,
+          input_type: call.input_type,
+          transcription: call.transcription ?? null,
+          duration: call.duration ?? null,
+          status: call.status || "processing",
+        })
         .select()
         .single();
       if (error) throw error;
       return data as Call;
     },
     onSuccess: () => {
+      queryClient.removeQueries({ queryKey: ["calls"] });
       queryClient.invalidateQueries({ queryKey: ["calls"] });
     },
     onError: () => {

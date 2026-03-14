@@ -59,18 +59,17 @@ export function UploadModal({ open, onOpenChange }: Props) {
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   }, []);
 
-  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || "https://silvanaportela1.app.n8n.cloud/webhook/sales-calls";
+  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
-  const getInputTypeFromMime = (f: File): string => {
+  const getInputTypeFromMime = (f: File, tab: "audio" | "text"): string => {
     const mime = f.type;
     if (mime === "application/pdf") return "pdf";
     if (mime === "text/plain") return "txt";
     if (mime.startsWith("audio/") || mime.startsWith("video/")) return "audio";
-    // Fallback to extension
     const ext = f.name.split(".").pop()?.toLowerCase();
     if (ext === "pdf") return "pdf";
     if (ext === "txt") return "txt";
-    return "audio";
+    return tab === "audio" ? "audio" : "txt";
   };
 
   const submitAudio = async () => {
@@ -78,12 +77,14 @@ export function UploadModal({ open, onOpenChange }: Props) {
       toast({ title: "Selecione um arquivo e um membro da equipe", variant: "destructive" });
       return;
     }
+    if (!webhookUrl) {
+      toast({ title: "Webhook URL not configured", variant: "destructive" });
+      return;
+    }
 
-    // Capture current file reference to avoid stale closures
     const currentFile = file;
     const currentMember = audioMember;
-    const currentInputType = getInputTypeFromMime(currentFile);
-
+    const currentInputType = getInputTypeFromMime(currentFile, "audio");
     setUploading(true); setProgress(10);
     try {
       const call = await createCall.mutateAsync({
@@ -134,22 +135,23 @@ export function UploadModal({ open, onOpenChange }: Props) {
       toast({ title: "Preencha todos os campos e forneça uma transcrição ou arquivo.", variant: "destructive" });
       return;
     }
+    if (!webhookUrl) {
+      toast({ title: "Webhook URL not configured", variant: "destructive" });
+      return;
+    }
 
-    // Capture current references to avoid stale data
     const currentTextFile = textFile;
     const currentTranscript = transcript;
     const currentMember = textMember;
     const currentCallName = callName;
     const currentDuration = duration;
 
-    // Determine inputType from current file MIME or fallback to "txt" for pasted text
     let inputType: string;
     if (currentTextFile) {
-      inputType = getInputTypeFromMime(currentTextFile);
+      inputType = getInputTypeFromMime(currentTextFile, "text");
     } else {
       inputType = "txt";
     }
-
     const fileName = currentTextFile ? currentTextFile.name : currentCallName;
 
     setTextSubmitting(true);
