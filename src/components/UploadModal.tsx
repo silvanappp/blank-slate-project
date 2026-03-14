@@ -234,7 +234,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Transcrição <span className="text-muted-foreground text-xs">(ou cole o texto diretamente)</span></Label>
+              <Label>Transcrição <span className="text-muted-foreground text-xs">(cole conversas do WhatsApp, email, etc.)</span></Label>
               <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Cole a transcrição completa da chamada aqui..." rows={6} />
             </div>
             <div>
