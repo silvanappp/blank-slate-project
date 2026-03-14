@@ -129,40 +129,48 @@ export function UploadModal({ open, onOpenChange }: Props) {
     }
   };
 
-  const getInputType = (file: File | null, hasTranscript: boolean): string => {
-    if (!file) return hasTranscript ? "txt" : "text";
-    const ext = file.name.split(".").pop()?.toLowerCase();
-    if (ext === "pdf") return "pdf";
-    if (ext === "txt") return "txt";
-    return "text";
-  };
-
   const submitText = async () => {
     if (!textMember || !callName || (!transcript && !textFile)) {
       toast({ title: "Preencha todos os campos e forneça uma transcrição ou arquivo.", variant: "destructive" });
       return;
     }
 
-    const inputType = getInputType(textFile, !!transcript);
+    // Capture current references to avoid stale data
+    const currentTextFile = textFile;
+    const currentTranscript = transcript;
+    const currentMember = textMember;
+    const currentCallName = callName;
+    const currentDuration = duration;
+
+    // Determine inputType from current file MIME or fallback to "txt" for pasted text
+    let inputType: string;
+    if (currentTextFile) {
+      inputType = getInputTypeFromMime(currentTextFile);
+    } else {
+      inputType = "txt";
+    }
+
+    const fileName = currentTextFile ? currentTextFile.name : currentCallName;
 
     setTextSubmitting(true);
     try {
       const call = await createCall.mutateAsync({
-        team_member: textMember,
-        file_name: textFile ? textFile.name : callName,
+        team_member: currentMember,
+        file_name: fileName,
         input_type: inputType,
-        transcription: transcript || undefined,
-        duration: duration || undefined,
+        transcription: currentTranscript || undefined,
+        duration: currentDuration || undefined,
       });
 
+      // Build fresh FormData for every submission
       const formData = new FormData();
       formData.append("callId", call.id);
-      formData.append("teamMember", textMember);
-      formData.append("fileName", textFile ? textFile.name : callName);
+      formData.append("teamMember", currentMember);
+      formData.append("fileName", fileName);
       formData.append("inputType", inputType);
-      if (textFile) formData.append("file", textFile);
-      if (transcript) formData.append("transcription", transcript);
-      if (duration) formData.append("duration", duration);
+      if (currentTextFile) formData.append("file", currentTextFile, currentTextFile.name);
+      if (currentTranscript) formData.append("transcription", currentTranscript);
+      if (currentDuration) formData.append("duration", currentDuration);
 
       const resp = await fetch(webhookUrl, { method: "POST", body: formData });
       if (!resp.ok) throw new Error(`Webhook falhou: ${resp.status}`);
