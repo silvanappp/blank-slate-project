@@ -59,18 +59,17 @@ export function UploadModal({ open, onOpenChange }: Props) {
     if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
   }, []);
 
-  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || "https://silvanaportela1.app.n8n.cloud/webhook/sales-calls";
+  const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
-  const getInputTypeFromMime = (f: File): string => {
+  const getInputTypeFromMime = (f: File, tab: "audio" | "text"): string => {
     const mime = f.type;
     if (mime === "application/pdf") return "pdf";
     if (mime === "text/plain") return "txt";
     if (mime.startsWith("audio/") || mime.startsWith("video/")) return "audio";
-    // Fallback to extension
     const ext = f.name.split(".").pop()?.toLowerCase();
     if (ext === "pdf") return "pdf";
     if (ext === "txt") return "txt";
-    return "audio";
+    return tab === "audio" ? "audio" : "txt";
   };
 
   const submitAudio = async () => {
