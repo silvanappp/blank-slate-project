@@ -41,6 +41,9 @@ export function UploadModal({ open, onOpenChange }: Props) {
     setFile(null); setAudioMember(""); setProgress(0); setUploading(false);
     setTextMember(""); setCallName(""); setTranscript(""); setDuration(""); setTextSubmitting(false);
     setTextFile(null);
+    // Reset file inputs to clear cached file references
+    if (fileRef.current) fileRef.current.value = "";
+    if (textFileRef.current) textFileRef.current.value = "";
   };
 
   const handleFile = (f: File) => {
