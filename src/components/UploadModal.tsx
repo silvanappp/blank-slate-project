@@ -135,22 +135,23 @@ export function UploadModal({ open, onOpenChange }: Props) {
       toast({ title: "Preencha todos os campos e forneça uma transcrição ou arquivo.", variant: "destructive" });
       return;
     }
+    if (!webhookUrl) {
+      toast({ title: "Webhook URL not configured", variant: "destructive" });
+      return;
+    }
 
-    // Capture current references to avoid stale data
     const currentTextFile = textFile;
     const currentTranscript = transcript;
     const currentMember = textMember;
     const currentCallName = callName;
     const currentDuration = duration;
 
-    // Determine inputType from current file MIME or fallback to "txt" for pasted text
     let inputType: string;
     if (currentTextFile) {
-      inputType = getInputTypeFromMime(currentTextFile);
+      inputType = getInputTypeFromMime(currentTextFile, "text");
     } else {
       inputType = "txt";
     }
-
     const fileName = currentTextFile ? currentTextFile.name : currentCallName;
 
     setTextSubmitting(true);
