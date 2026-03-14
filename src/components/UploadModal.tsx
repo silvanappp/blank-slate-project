@@ -77,12 +77,14 @@ export function UploadModal({ open, onOpenChange }: Props) {
       toast({ title: "Selecione um arquivo e um membro da equipe", variant: "destructive" });
       return;
     }
+    if (!webhookUrl) {
+      toast({ title: "Webhook URL not configured", variant: "destructive" });
+      return;
+    }
 
-    // Capture current file reference to avoid stale closures
     const currentFile = file;
     const currentMember = audioMember;
-    const currentInputType = getInputTypeFromMime(currentFile);
-
+    const currentInputType = getInputTypeFromMime(currentFile, "audio");
     setUploading(true); setProgress(10);
     try {
       const call = await createCall.mutateAsync({
