@@ -13,7 +13,7 @@ import { useCreateCall } from "@/hooks/useCalls";
 import { toast } from "@/hooks/use-toast";
 
 const AUDIO_FORMATS = ".mp3,.wav,.m4a,.mp4,.mov,.avi";
-const TEXT_FILE_FORMATS = ".docx,.pdf,.txt";
+const TEXT_FILE_FORMATS = ".pdf,.txt";
 const MAX_AUDIO_SIZE = 999 * 1024 * 1024;
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void };
