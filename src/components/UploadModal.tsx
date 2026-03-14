@@ -61,27 +61,45 @@ export function UploadModal({ open, onOpenChange }: Props) {
 
   const webhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || "https://silvanaportela1.app.n8n.cloud/webhook/sales-calls";
 
+  const getInputTypeFromMime = (f: File): string => {
+    const mime = f.type;
+    if (mime === "application/pdf") return "pdf";
+    if (mime === "text/plain") return "txt";
+    if (mime.startsWith("audio/") || mime.startsWith("video/")) return "audio";
+    // Fallback to extension
+    const ext = f.name.split(".").pop()?.toLowerCase();
+    if (ext === "pdf") return "pdf";
+    if (ext === "txt") return "txt";
+    return "audio";
+  };
+
   const submitAudio = async () => {
     if (!file || !audioMember) {
       toast({ title: "Selecione um arquivo e um membro da equipe", variant: "destructive" });
       return;
     }
 
+    // Capture current file reference to avoid stale closures
+    const currentFile = file;
+    const currentMember = audioMember;
+    const currentInputType = getInputTypeFromMime(currentFile);
+
     setUploading(true); setProgress(10);
     try {
       const call = await createCall.mutateAsync({
-        team_member: audioMember,
-        file_name: file.name,
-        input_type: "audio",
+        team_member: currentMember,
+        file_name: currentFile.name,
+        input_type: currentInputType,
       });
       setProgress(30);
 
+      // Build fresh FormData for every submission
       const formData = new FormData();
       formData.append("callId", call.id);
-      formData.append("teamMember", audioMember);
-      formData.append("fileName", file.name);
-      formData.append("inputType", "audio");
-      formData.append("file", file);
+      formData.append("teamMember", currentMember);
+      formData.append("fileName", currentFile.name);
+      formData.append("inputType", currentInputType);
+      formData.append("file", currentFile, currentFile.name);
 
       const xhr = new XMLHttpRequest();
       xhr.open("POST", webhookUrl);
