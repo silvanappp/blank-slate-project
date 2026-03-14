@@ -108,18 +108,28 @@ export function UploadModal({ open, onOpenChange }: Props) {
     }
   };
 
+  const getInputType = (file: File | null, hasTranscript: boolean): string => {
+    if (!file) return hasTranscript ? "txt" : "text";
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    if (ext === "pdf") return "pdf";
+    if (ext === "txt") return "txt";
+    return "text";
+  };
+
   const submitText = async () => {
     if (!textMember || !callName || (!transcript && !textFile)) {
       toast({ title: "Preencha todos os campos e forneça uma transcrição ou arquivo.", variant: "destructive" });
       return;
     }
 
+    const inputType = getInputType(textFile, !!transcript);
+
     setTextSubmitting(true);
     try {
       const call = await createCall.mutateAsync({
         team_member: textMember,
         file_name: textFile ? textFile.name : callName,
-        input_type: "text",
+        input_type: inputType,
         transcription: transcript || undefined,
         duration: duration || undefined,
       });
@@ -128,7 +138,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
       formData.append("callId", call.id);
       formData.append("teamMember", textMember);
       formData.append("fileName", textFile ? textFile.name : callName);
-      formData.append("inputType", "text");
+      formData.append("inputType", inputType);
       if (textFile) formData.append("file", textFile);
       if (transcript) formData.append("transcription", transcript);
       if (duration) formData.append("duration", duration);
@@ -216,7 +226,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — PDF, TXT)</span></Label>
+              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(Formatos aceitos: PDF, TXT)</span></Label>
               <div className="flex items-center gap-2 mt-1">
                 <input ref={textFileRef} type="file" accept={TEXT_FILE_FORMATS} className="hidden" onChange={(e) => e.target.files?.[0] && setTextFile(e.target.files[0])} />
                 <Button variant="outline" size="sm" onClick={() => textFileRef.current?.click()} type="button">
