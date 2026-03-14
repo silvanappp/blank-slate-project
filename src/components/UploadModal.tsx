@@ -216,7 +216,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — DOCX, PDF, TXT)</span></Label>
+              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — PDF, TXT)</span></Label>
               <div className="flex items-center gap-2 mt-1">
                 <input ref={textFileRef} type="file" accept={TEXT_FILE_FORMATS} className="hidden" onChange={(e) => e.target.files?.[0] && setTextFile(e.target.files[0])} />
                 <Button variant="outline" size="sm" onClick={() => textFileRef.current?.click()} type="button">
