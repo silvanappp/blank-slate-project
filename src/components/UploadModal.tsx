@@ -13,7 +13,7 @@ import { useCreateCall } from "@/hooks/useCalls";
 import { toast } from "@/hooks/use-toast";
 
 const AUDIO_FORMATS = ".mp3,.wav,.m4a,.mp4,.mov,.avi";
-const TEXT_FILE_FORMATS = ".docx,.pdf,.txt";
+const TEXT_FILE_FORMATS = ".pdf,.txt";
 const MAX_AUDIO_SIZE = 999 * 1024 * 1024;
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void };
@@ -216,7 +216,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — DOCX, PDF, TXT)</span></Label>
+              <Label>Enviar Documento <span className="text-muted-foreground text-xs">(opcional — PDF, TXT)</span></Label>
               <div className="flex items-center gap-2 mt-1">
                 <input ref={textFileRef} type="file" accept={TEXT_FILE_FORMATS} className="hidden" onChange={(e) => e.target.files?.[0] && setTextFile(e.target.files[0])} />
                 <Button variant="outline" size="sm" onClick={() => textFileRef.current?.click()} type="button">
@@ -234,7 +234,7 @@ export function UploadModal({ open, onOpenChange }: Props) {
             </div>
 
             <div>
-              <Label>Transcrição <span className="text-muted-foreground text-xs">(ou cole o texto diretamente)</span></Label>
+              <Label>Transcrição <span className="text-muted-foreground text-xs">(cole conversas do WhatsApp, email, etc.)</span></Label>
               <Textarea value={transcript} onChange={(e) => setTranscript(e.target.value)} placeholder="Cole a transcrição completa da chamada aqui..." rows={6} />
             </div>
             <div>
