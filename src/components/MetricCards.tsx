@@ -33,9 +33,9 @@ export function MetricCards({ calls, isLoading }: { calls: Call[]; isLoading: bo
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i}>
+          <Card key={i} className="border-border/50 bg-card/60 backdrop-blur-sm">
             <CardContent className="p-5">
-              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full bg-muted/50" />
             </CardContent>
           </Card>
         ))}
@@ -55,29 +55,33 @@ export function MetricCards({ calls, isLoading }: { calls: Call[]; isLoading: bo
   }).length;
 
   const metrics = [
-    { label: "Total de Chamadas", value: totalCalls, icon: Phone, color: "text-primary" },
+    { label: "Total de Chamadas", value: totalCalls, icon: Phone, color: "text-primary", iconBg: "bg-primary/12" },
     {
       label: "Nota Média",
       value: scored.length ? avgScore : "—",
       icon: TrendingUp,
       color: scored.length ? getScoreColor(avgScore) : "text-muted-foreground",
-      bg: scored.length ? getScoreBg(avgScore) : "",
+      iconBg: scored.length ? getScoreBg(avgScore) : "bg-muted/30",
     },
-    { label: "Este Mês", value: monthCalls, icon: Calendar, color: "text-primary" },
-    { label: "Duração Média", value: avgDuration(calls), icon: Clock, color: "text-primary" },
+    { label: "Este Mês", value: monthCalls, icon: Calendar, color: "text-primary", iconBg: "bg-primary/12" },
+    { label: "Duração Média", value: avgDuration(calls), icon: Clock, color: "text-primary", iconBg: "bg-primary/12" },
   ];
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {metrics.map((m) => (
-        <Card key={m.label}>
+      {metrics.map((m, i) => (
+        <Card
+          key={m.label}
+          className="group border-border/50 bg-card/60 backdrop-blur-sm hover:border-primary/30 hover:shadow-glow-sm transition-all duration-300 animate-fade-in"
+          style={{ animationDelay: `${i * 80}ms`, animationFillMode: "backwards" }}
+        >
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">{m.label}</p>
-                <p className={`text-2xl font-bold mt-1 ${m.color}`}>{m.value}</p>
+                <p className="text-[13px] text-muted-foreground font-medium">{m.label}</p>
+                <p className={`text-2xl font-bold mt-1.5 ${m.color}`}>{m.value}</p>
               </div>
-              <div className={`p-2.5 rounded-lg ${m.bg || "bg-primary/10"}`}>
+              <div className={`p-2.5 rounded-xl ${m.iconBg} transition-transform duration-300 group-hover:scale-110`}>
                 <m.icon className={`h-5 w-5 ${m.color}`} />
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Upload } from "lucide-react";
+import { Upload, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MetricCards } from "@/components/MetricCards";
 import { CallFilters, type Filters } from "@/components/CallFilters";
@@ -40,13 +40,16 @@ export default function Dashboard() {
   }, [calls, filters]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Painel</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Painel</h1>
           <p className="text-muted-foreground text-sm mt-1">Monitore e avalie as chamadas de vendas da sua equipe</p>
         </div>
-        <Button onClick={() => setUploadOpen(true)} className="gap-2">
+        <Button
+          onClick={() => setUploadOpen(true)}
+          className="gap-2 bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 shadow-glow-sm transition-all duration-200 hover:shadow-glow"
+        >
           <Upload className="h-4 w-4" /> Enviar Chamada
         </Button>
       </div>
