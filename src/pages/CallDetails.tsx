@@ -15,12 +15,12 @@ function hasDocExtension(fileName: string): boolean {
 
 function TypeBadge({ type, fileName }: { type: string | null; fileName: string }) {
   if (type === "audio") {
-    return <Badge variant="outline" className="gap-1"><Mic className="h-3 w-3" /> Áudio</Badge>;
+    return <Badge variant="outline" className="gap-1 border-border/60"><Mic className="h-3 w-3" /> Áudio</Badge>;
   }
   if (type === "text" && hasDocExtension(fileName)) {
-    return <Badge variant="outline" className="gap-1"><FileText className="h-3 w-3" /> Documento</Badge>;
+    return <Badge variant="outline" className="gap-1 border-border/60"><FileText className="h-3 w-3" /> Documento</Badge>;
   }
-  return <Badge variant="outline" className="gap-1"><Type className="h-3 w-3" /> Texto</Badge>;
+  return <Badge variant="outline" className="gap-1 border-border/60"><Type className="h-3 w-3" /> Texto</Badge>;
 }
 
 function ScoreDisplay({ score }: { score: number | null }) {
@@ -28,9 +28,9 @@ function ScoreDisplay({ score }: { score: number | null }) {
   const cls = score >= 80 ? "score-good" : score >= 60 ? "score-medium" : "score-bad";
   const bg = score >= 80 ? "bg-score-good" : score >= 60 ? "bg-score-medium" : "bg-score-bad";
   return (
-    <div className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 ${bg}`}>
+    <div className={`inline-flex items-center gap-2 rounded-2xl px-5 py-2.5 ${bg}`}>
       <span className={`text-3xl font-bold ${cls}`}>{score}</span>
-      <span className={`text-sm ${cls}`}>/ 100</span>
+      <span className={`text-sm ${cls} opacity-70`}>/ 100</span>
     </div>
   );
 }
@@ -44,9 +44,9 @@ export default function CallDetails() {
   if (isLoading) {
     return (
       <div className="space-y-6 max-w-4xl">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-60 w-full" />
+        <Skeleton className="h-8 w-48 bg-muted/30" />
+        <Skeleton className="h-40 w-full bg-muted/30" />
+        <Skeleton className="h-60 w-full bg-muted/30" />
       </div>
     );
   }
@@ -55,7 +55,7 @@ export default function CallDetails() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
         <p className="text-lg">Chamada não encontrada</p>
-        <Button variant="link" onClick={() => navigate("/")}>Voltar ao Painel</Button>
+        <Button variant="link" onClick={() => navigate("/")} className="text-primary">Voltar ao Painel</Button>
       </div>
     );
   }
@@ -63,14 +63,14 @@ export default function CallDetails() {
   const isProcessing = call.status === "processing";
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <Button variant="ghost" onClick={() => navigate("/")} className="gap-2 -ml-2">
+    <div className="space-y-6 max-w-4xl animate-fade-in">
+      <Button variant="ghost" onClick={() => navigate("/")} className="gap-2 -ml-2 text-muted-foreground hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Voltar ao Painel
       </Button>
 
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold">{call.file_name}</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{call.file_name}</h1>
           <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-muted-foreground">
             <span className="flex items-center gap-1"><User className="h-4 w-4" /> {call.team_member}</span>
             <span className="flex items-center gap-1"><Calendar className="h-4 w-4" /> {call.created_at ? format(new Date(call.created_at), "dd/MM/yyyy HH:mm") : "—"}</span>
@@ -82,7 +82,7 @@ export default function CallDetails() {
       </div>
 
       {isProcessing && (
-        <Card className="border-primary/30 bg-primary/5">
+        <Card className="border-primary/20 bg-primary/5 backdrop-blur-sm">
           <CardContent className="flex items-center gap-3 py-6">
             <Loader2 className="h-5 w-5 text-primary animate-spin" />
             <div>
@@ -94,7 +94,7 @@ export default function CallDetails() {
       )}
 
       {call.status === "failed" && (
-        <Card className="border-destructive/30 bg-destructive/5">
+        <Card className="border-destructive/20 bg-destructive/5">
           <CardContent className="py-6">
             <p className="font-medium text-destructive">Processamento falhou</p>
             <p className="text-sm text-muted-foreground">Houve um erro ao avaliar esta chamada. Tente enviar novamente.</p>
@@ -103,12 +103,12 @@ export default function CallDetails() {
       )}
 
       {call.transcription && (
-        <Card>
+        <Card className="border-border/50 bg-card/60 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg">Transcrição</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground">
+            <div className="text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground font-mono">
               {call.transcription}
             </div>
           </CardContent>
@@ -116,7 +116,7 @@ export default function CallDetails() {
       )}
 
       {call.feedback && (
-        <Card>
+        <Card className="border-border/50 bg-card/60 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg">Feedback da IA</CardTitle>
           </CardHeader>
@@ -129,7 +129,7 @@ export default function CallDetails() {
       )}
 
       {call.suggestions && (
-        <Card>
+        <Card className="border-border/50 bg-card/60 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg">Sugestões de Melhoria</CardTitle>
           </CardHeader>
@@ -149,7 +149,7 @@ export default function CallDetails() {
       )}
 
       {call.input_type === "audio" && call.file_url && (
-        <Card>
+        <Card className="border-border/50 bg-card/60 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-lg">Reprodução de Áudio</CardTitle>
           </CardHeader>

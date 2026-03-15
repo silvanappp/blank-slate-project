@@ -28,18 +28,18 @@ export function CallFilters({ filters, onChange }: Props) {
   const hasFilters = filters.search || filters.teamMember || filters.status || filters.dateFrom || filters.dateTo;
 
   return (
-    <div className="flex flex-wrap gap-3 items-center">
+    <div className="flex flex-wrap gap-3 items-center animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "backwards" }}>
       <div className="relative flex-1 min-w-[200px] max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Buscar chamadas..."
           value={filters.search}
           onChange={(e) => onChange({ ...filters, search: e.target.value })}
-          className="pl-9"
+          className="pl-9 bg-muted/30 border-border/60 focus:border-primary/50 transition-colors"
         />
       </div>
       <Select value={filters.teamMember} onValueChange={(v) => onChange({ ...filters, teamMember: v === "all" ? "" : v })}>
-        <SelectTrigger className="w-[180px]">
+        <SelectTrigger className="w-[180px] bg-muted/30 border-border/60">
           <SelectValue placeholder="Membro da Equipe" />
         </SelectTrigger>
         <SelectContent>
@@ -50,7 +50,7 @@ export function CallFilters({ filters, onChange }: Props) {
         </SelectContent>
       </Select>
       <Select value={filters.status} onValueChange={(v) => onChange({ ...filters, status: v === "all" ? "" : v })}>
-        <SelectTrigger className="w-[150px]">
+        <SelectTrigger className="w-[150px] bg-muted/30 border-border/60">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
@@ -63,7 +63,7 @@ export function CallFilters({ filters, onChange }: Props) {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filters.dateFrom && "text-muted-foreground")}>
+          <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal bg-muted/30 border-border/60", !filters.dateFrom && "text-muted-foreground")}>
             <CalendarIcon className="mr-2 h-4 w-4" />
             {filters.dateFrom ? format(filters.dateFrom, "dd/MM") : "De"}
           </Button>
@@ -75,7 +75,7 @@ export function CallFilters({ filters, onChange }: Props) {
 
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal", !filters.dateTo && "text-muted-foreground")}>
+          <Button variant="outline" className={cn("w-[140px] justify-start text-left font-normal bg-muted/30 border-border/60", !filters.dateTo && "text-muted-foreground")}>
             <CalendarIcon className="mr-2 h-4 w-4" />
             {filters.dateTo ? format(filters.dateTo, "dd/MM") : "Até"}
           </Button>
@@ -86,7 +86,7 @@ export function CallFilters({ filters, onChange }: Props) {
       </Popover>
 
       {hasFilters && (
-        <Button variant="ghost" size="sm" onClick={() => onChange({ search: "", teamMember: "", status: "", dateFrom: undefined, dateTo: undefined })}>
+        <Button variant="ghost" size="sm" onClick={() => onChange({ search: "", teamMember: "", status: "", dateFrom: undefined, dateTo: undefined })} className="text-muted-foreground hover:text-foreground">
           <X className="h-4 w-4 mr-1" /> Limpar
         </Button>
       )}

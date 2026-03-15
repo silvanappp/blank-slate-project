@@ -16,7 +16,7 @@ type SortDir = "asc" | "desc";
 function ScoreBadge({ score }: { score: number | null }) {
   if (score == null) return <span className="text-muted-foreground">—</span>;
   const cls = score >= 80 ? "score-good bg-score-good" : score >= 60 ? "score-medium bg-score-medium" : "score-bad bg-score-bad";
-  return <span className={`inline-flex items-center justify-center rounded-md px-2.5 py-0.5 text-sm font-semibold ${cls}`}>{score}</span>;
+  return <span className={`inline-flex items-center justify-center rounded-lg px-2.5 py-0.5 text-sm font-semibold ${cls}`}>{score}</span>;
 }
 
 function StatusBadge({ status }: { status: string | null }) {
@@ -48,20 +48,20 @@ function hasDocExtension(fileName: string): boolean {
 function TypeBadge({ type, fileName }: { type: string | null; fileName: string }) {
   if (type === "audio") {
     return (
-      <Badge variant="outline" className="gap-1">
+      <Badge variant="outline" className="gap-1 border-border/60">
         <Mic className="h-3 w-3" /> Áudio
       </Badge>
     );
   }
   if (type === "text" && hasDocExtension(fileName)) {
     return (
-      <Badge variant="outline" className="gap-1">
+      <Badge variant="outline" className="gap-1 border-border/60">
         <FileText className="h-3 w-3" /> Documento
       </Badge>
     );
   }
   return (
-    <Badge variant="outline" className="gap-1">
+    <Badge variant="outline" className="gap-1 border-border/60">
       <Type className="h-3 w-3" /> Texto
     </Badge>
   );
@@ -101,7 +101,7 @@ export function CallsTable({ calls, isLoading }: Props) {
     return (
       <div className="space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-12 w-full" />
+          <Skeleton key={i} className="h-12 w-full bg-muted/30" />
         ))}
       </div>
     );
@@ -110,9 +110,11 @@ export function CallsTable({ calls, isLoading }: Props) {
   if (!calls.length) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-        <Mic className="h-12 w-12 mb-4 opacity-40" />
+        <div className="p-4 rounded-2xl bg-muted/20 mb-4">
+          <Mic className="h-10 w-10 opacity-40" />
+        </div>
         <p className="text-lg font-medium">Nenhuma chamada ainda</p>
-        <p className="text-sm">Envie sua primeira chamada para começar</p>
+        <p className="text-sm mt-1">Envie sua primeira chamada para começar</p>
       </div>
     );
   }
@@ -125,11 +127,11 @@ export function CallsTable({ calls, isLoading }: Props) {
   );
 
   return (
-    <div>
-      <div className="rounded-lg border overflow-hidden">
+    <div className="animate-fade-in" style={{ animationDelay: "200ms", animationFillMode: "backwards" }}>
+      <div className="rounded-xl border border-border/50 overflow-hidden bg-card/40 backdrop-blur-sm">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/30 hover:bg-muted/30">
+            <TableRow className="bg-muted/20 hover:bg-muted/20 border-border/50">
               <TableHead><SortHeader label="Data" sKey="created_at" /></TableHead>
               <TableHead><SortHeader label="Membro" sKey="team_member" /></TableHead>
               <TableHead>Arquivo</TableHead>
@@ -141,7 +143,11 @@ export function CallsTable({ calls, isLoading }: Props) {
           </TableHeader>
           <TableBody>
             {paginated.map((call) => (
-              <TableRow key={call.id} className="hover:bg-accent/50 cursor-pointer" onClick={() => navigate(`/call/${call.id}`)}>
+              <TableRow
+                key={call.id}
+                className="hover:bg-accent/40 cursor-pointer border-border/30 transition-colors duration-150"
+                onClick={() => navigate(`/call/${call.id}`)}
+              >
                 <TableCell className="text-sm">
                   {call.created_at ? format(new Date(call.created_at), "dd/MM/yyyy HH:mm") : "—"}
                 </TableCell>
@@ -152,18 +158,18 @@ export function CallsTable({ calls, isLoading }: Props) {
                 <TableCell><TypeBadge type={call.input_type} fileName={call.file_name} /></TableCell>
                 <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate(`/call/${call.id}`)}>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors" onClick={() => navigate(`/call/${call.id}`)}>
                       <Eye className="h-4 w-4" />
                     </Button>
                     {call.input_type === "audio" && call.file_url && (
-                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors" asChild>
                         <a href={call.file_url} target="_blank" rel="noopener noreferrer">
                           <Play className="h-4 w-4" />
                         </a>
                       </Button>
                     )}
                     {call.file_url && (
-                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors" asChild>
                         <a href={call.file_url} download>
                           <Download className="h-4 w-4" />
                         </a>
@@ -171,7 +177,7 @@ export function CallsTable({ calls, isLoading }: Props) {
                     )}
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </AlertDialogTrigger>
@@ -201,8 +207,8 @@ export function CallsTable({ calls, isLoading }: Props) {
             Mostrando {page * perPage + 1}–{Math.min((page + 1) * perPage, sorted.length)} de {sorted.length}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Anterior</Button>
-            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)}>Próximo</Button>
+            <Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)} className="border-border/50">Anterior</Button>
+            <Button variant="outline" size="sm" disabled={page >= totalPages - 1} onClick={() => setPage(page + 1)} className="border-border/50">Próximo</Button>
           </div>
         </div>
       )}

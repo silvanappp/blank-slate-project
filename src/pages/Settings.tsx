@@ -21,16 +21,19 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">Configurações</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Configurações</h1>
         <p className="text-muted-foreground text-sm mt-1">Gerencie os membros da sua equipe</p>
       </div>
 
-      <Card>
+      <Card className="border-border/50 bg-card/60 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" /> Membros da Equipe
+            <div className="p-1.5 rounded-lg bg-primary/12">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            Membros da Equipe
           </CardTitle>
           <CardDescription>Adicione ou remova membros da equipe que fazem chamadas de vendas</CardDescription>
         </CardHeader>
@@ -40,27 +43,27 @@ export default function Settings() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Nome do membro da equipe"
-              className="flex-1"
+              className="flex-1 bg-muted/30 border-border/60 focus:border-primary/50 transition-colors"
             />
-            <Button type="submit" disabled={!name.trim() || addMember.isPending}>
+            <Button type="submit" disabled={!name.trim() || addMember.isPending} className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 transition-opacity">
               <Plus className="h-4 w-4 mr-1" /> Adicionar
             </Button>
           </form>
 
           {isLoading ? (
             <div className="space-y-2">
-              {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+              {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-10 w-full bg-muted/30" />)}
             </div>
           ) : !members?.length ? (
             <p className="text-sm text-muted-foreground py-4 text-center">Nenhum membro ainda. Adicione o primeiro acima.</p>
           ) : (
             <div className="space-y-2">
               {members.map((m) => (
-                <div key={m.id} className="flex items-center justify-between rounded-lg border px-4 py-3">
+                <div key={m.id} className="flex items-center justify-between rounded-xl border border-border/50 px-4 py-3 bg-muted/10 hover:bg-muted/20 transition-colors duration-150">
                   <span className="font-medium">{m.name}</span>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </AlertDialogTrigger>
