@@ -2,62 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 230 15% 8%;
-    --foreground: 220 15% 92%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
 
-    --card: 230 14% 11%;
-    --card-foreground: 220 15% 92%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 230 14% 11%;
-    --popover-foreground: 220 15% 92%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 250 85% 65%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 250 90% 72%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 230 12% 18%;
-    --secondary-foreground: 220 15% 85%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 230 12% 16%;
-    --muted-foreground: 225 10% 50%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 230 14% 16%;
-    --accent-foreground: 220 15% 92%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 230 12% 18%;
-    --input: 230 12% 18%;
-    --ring: 250 85% 65%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
-    --sidebar-background: 230 16% 7%;
-    --sidebar-foreground: 225 10% 55%;
-    --sidebar-primary: 250 85% 65%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 250 85% 65%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 230 12% 14%;
-    --sidebar-ring: 250 85% 65%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --success: 160 70% 45%;
-    --success-foreground: 160 70% 90%;
-    --warning: 38 92% 55%;
-    --warning-foreground: 38 90% 90%;
+    --success: 142.1 76.2% 36.3%;
+    --success-foreground: 355.7 100% 97.3%;
+    --warning: 45.4 93.4% 47.5%;
+    --warning-foreground: 26 83.3% 14.1%;
 
-    --score-good: 160 70% 50%;
-    --score-medium: 38 92% 55%;
-    --score-bad: 0 72% 55%;
-
-    --gradient-primary: linear-gradient(135deg, hsl(250 85% 65%), hsl(280 85% 65%));
-    --shadow-glow: 0 0 20px hsl(250 85% 65% / 0.15);
-    --shadow-card: 0 4px 24px -4px hsl(0 0% 0% / 0.3);
+    --score-good: 142.1 76.2% 36.3%;
+    --score-medium: 45.4 93.4% 47.5%;
+    --score-bad: 0 84.2% 60.2%;
   }
 }
 
@@ -68,7 +63,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   /* Custom scrollbar */
