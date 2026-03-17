@@ -28,7 +28,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarContent className="flex flex-col h-full bg-gradient-to-b from-sidebar to-[hsl(230_16%_5%)]">
+      <SidebarContent className="flex flex-col h-full bg-sidebar">
         <div className={`p-4 ${collapsed ? "px-2" : ""}`}>
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary-glow shadow-glow-sm">
